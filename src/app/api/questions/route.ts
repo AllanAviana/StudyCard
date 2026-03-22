@@ -25,13 +25,7 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' }
     });
     
-    // Parse options for the frontend
-    const parsedQuestions = questions.map(q => ({
-      ...q,
-      options: JSON.parse(q.options)
-    }));
-    
-    return NextResponse.json(parsedQuestions);
+    return NextResponse.json(questions);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch questions' }, { status: 500 });
   }
@@ -51,17 +45,14 @@ export async function POST(req: NextRequest) {
     const question = await prisma.question.create({
       data: { 
         statement, 
-        options: JSON.stringify(options), 
+        options, 
         correctAnswer, 
         comment, 
         topicId 
       }
     });
     
-    return NextResponse.json({
-        ...question,
-        options: JSON.parse(question.options)
-    }, { status: 201 });
+    return NextResponse.json(question, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create question' }, { status: 500 });
   }
